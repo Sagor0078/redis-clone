@@ -4,7 +4,7 @@ A lightweight Redis clone written in Go with basic in-memory key-value support.
 
 ## Features
 
-- GET, SET with EX/PX, DEL, QUIT support
+- GET, SET with EX/PX, DEL, QUIT, EXPIRE, TTL, PING support
 - RESP and inline command parsing
 - Expiration support using goroutines
 

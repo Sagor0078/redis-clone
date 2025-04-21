@@ -23,6 +23,14 @@ func Handle(cmd protocol.Command) bool {
 		return handleSet(cmd)
 	case "DEL":
 		return handleDel(cmd)
+	case "EXPIRE":
+		return handleExpire(cmd)
+	case "TTL":
+		return handleTTL(cmd)
+	case "PING":
+	    cmd.Conn.Write([]byte("+PONG\r\n"))
+    return true
+
 	case "QUIT":
 		cmd.Conn.Write([]byte("+OK\r\n"))
 		return false
@@ -101,3 +109,46 @@ func handleDel(cmd protocol.Command) bool {
 	cmd.Conn.Write([]byte(fmt.Sprintf(":%d\r\n", count)))
 	return true
 }
+
+func handleExpire(cmd protocol.Command) bool {
+	if len(cmd.Args) != 3 {
+		cmd.Conn.Write([]byte("-ERR wrong number of arguments for EXPIRE\r\n"))
+		return true
+	}
+	key := cmd.Args[1]
+	seconds, err := strconv.Atoi(cmd.Args[2])
+	if err != nil {
+		cmd.Conn.Write([]byte("-ERR invalid expire time\r\n"))
+		return true
+	}
+	val, ok := cache.Get(key)
+	if !ok {
+		cmd.Conn.Write([]byte(":0\r\n")) 
+		return true
+	}
+	cache.SetWithExpiration(key, val, time.Duration(seconds)*time.Second)
+	cmd.Conn.Write([]byte(":1\r\n")) 
+	return true
+}
+
+func handleTTL(cmd protocol.Command) bool {
+	if len(cmd.Args) != 2 {
+		cmd.Conn.Write([]byte("-ERR wrong number of arguments for TTL\r\n"))
+		return true
+	}
+	key := cmd.Args[1]
+	_, ok := cache.Get(key)
+	if !ok {
+		cmd.Conn.Write([]byte(":-2\r\n")) 
+		return true
+	}
+	ttl := cache.TTL(key)
+	if ttl < 0 {
+		cmd.Conn.Write([]byte(":-1\r\n")) 
+	} else {
+		cmd.Conn.Write([]byte(fmt.Sprintf(":%d\r\n", int(ttl.Seconds()))))
+	}
+	return true
+}
+
+
