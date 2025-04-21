@@ -34,5 +34,15 @@ go test ./internal/cache -v
 ```bash
 go test ./internal/command -v
 ```
+- Running test for protocol package 
+```bash
+go test ./internal/protocol -v
+```
+- Running test for session package
+```bash
+go test ./internal/session -v
+```
+
+
 
 

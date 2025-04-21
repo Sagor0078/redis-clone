@@ -1,5 +1,4 @@
 
-// redis-clone/internal/protocol/parser.go
 package protocol
 
 import (
