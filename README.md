@@ -4,7 +4,7 @@ A lightweight Redis clone written in Go with basic in-memory key-value support.
 
 ## Features
 
-- GET, SET with EX/PX, DEL, QUIT, EXPIRE, TTL, PING support
+- GET, SET with EX/PX, DEL, QUIT, EXPIRE, TTL, PING, INCR, DECR support
 - RESP and inline command parsing
 - Expiration support using goroutines
 
@@ -46,7 +46,6 @@ go test ./internal/session -v
 
 ## more features we will added in future
 
-- INCR / DECR	Numeric operations (atomic counter, etc.)
 - FLUSHALL / FLUSHDB	Clear all data
 - Persistence (RDB style)	Save/load to disk
 - Pub/Sub	Implement publish/subscribe model

@@ -19,21 +19,36 @@ func Handle(cmd protocol.Command) bool {
 	switch strings.ToUpper(cmd.Args[0]) {
 	case "GET":
 		return handleGet(cmd)
+
 	case "SET":
 		return handleSet(cmd)
+
 	case "DEL":
 		return handleDel(cmd)
+
 	case "EXPIRE":
 		return handleExpire(cmd)
+
 	case "TTL":
 		return handleTTL(cmd)
+
 	case "PING":
 	    cmd.Conn.Write([]byte("+PONG\r\n"))
-    return true
+	    return true
+
+	case "INCR":
+		return handleIncr(cmd)
+
+	case "DECR":
+		return handleDecr(cmd)
+
+	case "FLUSHALL":
+		return handleFlushAll(cmd)
 
 	case "QUIT":
 		cmd.Conn.Write([]byte("+OK\r\n"))
 		return false
+
 	default:
 		cmd.Conn.Write([]byte("-ERR unknown command '" + cmd.Args[0] + "'\r\n"))
 		return true
@@ -152,3 +167,54 @@ func handleTTL(cmd protocol.Command) bool {
 }
 
 
+func handleIncr(cmd protocol.Command) bool {
+	if len(cmd.Args) != 2 {
+		cmd.Conn.Write([]byte("-ERR wrong number of arguments for INCR\r\n"))
+		return true
+	}
+	key := cmd.Args[1]
+	val, ok := cache.Get(key)
+	if !ok {
+		cache.Set(key, "1")
+		cmd.Conn.Write([]byte(":1\r\n"))
+		return true
+	}
+	num, err := strconv.Atoi(val)
+	if err != nil {
+		cmd.Conn.Write([]byte("-ERR value is not an integer\r\n"))
+		return true
+	}
+	num++
+	cache.Set(key, strconv.Itoa(num))
+	cmd.Conn.Write([]byte(fmt.Sprintf(":%d\r\n", num)))
+	return true
+}
+
+func handleDecr(cmd protocol.Command) bool {
+	if len(cmd.Args) != 2 {
+		cmd.Conn.Write([]byte("-ERR wrong number of arguments for DECR\r\n"))
+		return true
+	}
+	key := cmd.Args[1]
+	val, ok := cache.Get(key)
+	if !ok {
+		cache.Set(key, "-1")
+		cmd.Conn.Write([]byte(":-1\r\n"))
+		return true
+	}
+	num, err := strconv.Atoi(val)
+	if err != nil {
+		cmd.Conn.Write([]byte("-ERR value is not an integer\r\n"))
+		return true
+	}
+	num--
+	cache.Set(key, strconv.Itoa(num))
+	cmd.Conn.Write([]byte(fmt.Sprintf(":%d\r\n", num)))
+	return true
+}
+
+func handleFlushAll(cmd protocol.Command) bool {
+	cache.FlushAll()
+	cmd.Conn.Write([]byte("+OK\r\n"))
+	return true
+}

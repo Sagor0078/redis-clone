@@ -69,3 +69,7 @@ func TTL(key string) time.Duration {
 	}
 	return ttl
 }
+
+func FlushAll() {
+	store = sync.Map{}
+}
