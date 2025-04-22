@@ -10,14 +10,46 @@ import (
 	"github.com/Sagor0078/redis-clone/internal/cache"
 	"github.com/Sagor0078/redis-clone/internal/protocol"
 	"github.com/Sagor0078/redis-clone/internal/pubsub"
+	"github.com/Sagor0078/redis-clone/internal/transaction"
 )
 
 func Handle(cmd protocol.Command) bool {
+
 	if len(cmd.Args) == 0 {
 		cmd.Conn.Write([]byte("-ERR empty command\r\n"))
 		return true
 	}
-	switch strings.ToUpper(cmd.Args[0]) {
+
+	name := strings.ToUpper(cmd.Args[0])
+	
+	// if transaction.IsInTransaction(cmd.Conn) && name != "EXEC" && name != "DISCARD" {
+	// 	transaction.EnqueueCommand(cmd)
+	// 	cmd.Conn.Write([]byte("+QUEUED\r\n"))
+	// 	return true
+	// }
+
+	switch name {
+
+	case "MULTI":
+		transaction.BeginTransaction(cmd.Conn)
+		cmd.Conn.Write([]byte("+OK\r\n"))
+		return true
+	case "EXEC":
+		transaction.ExecuteTransaction(cmd.Conn, Handle)
+		return true
+	case "DISCARD":
+		transaction.DiscardTransaction(cmd.Conn)
+		return true
+	}
+
+	if transaction.IsInTransaction(cmd.Conn) {
+		transaction.EnqueueCommand(cmd)
+		cmd.Conn.Write([]byte("+QUEUED\r\n"))
+		return true
+	}
+
+	switch name {
+
 	case "GET":
 		return handleGet(cmd)
 
@@ -52,6 +84,19 @@ func Handle(cmd protocol.Command) bool {
 	case "PUBLISH":
 		return handlePublish(cmd)
 
+	// case "MULTI":
+	// 	transaction.BeginTransaction(cmd.Conn)
+	// 	cmd.Conn.Write([]byte("+OK\r\n"))
+	// 	return true
+
+	// case "EXEC":
+	// 	transaction.ExecuteTransaction(cmd.Conn, Handle)
+	// 	return true
+
+	// case "DISCARD":
+	// 	transaction.DiscardTransaction(cmd.Conn)
+	// 	return true
+
 	case "QUIT":
 		cmd.Conn.Write([]byte("+OK\r\n"))
 		return false
@@ -60,6 +105,8 @@ func Handle(cmd protocol.Command) bool {
 		cmd.Conn.Write([]byte("-ERR unknown command '" + cmd.Args[0] + "'\r\n"))
 		return true
 	}
+
+
 }
 
 func handleGet(cmd protocol.Command) bool {
@@ -75,6 +122,7 @@ func handleGet(cmd protocol.Command) bool {
 	}
 	return true
 }
+
 
 func handleSet(cmd protocol.Command) bool {
 	if len(cmd.Args) < 3 {
