@@ -9,6 +9,7 @@ import (
 
 	"github.com/Sagor0078/redis-clone/internal/cache"
 	"github.com/Sagor0078/redis-clone/internal/protocol"
+	"github.com/Sagor0078/redis-clone/internal/pubsub"
 )
 
 func Handle(cmd protocol.Command) bool {
@@ -44,6 +45,12 @@ func Handle(cmd protocol.Command) bool {
 
 	case "FLUSHALL":
 		return handleFlushAll(cmd)
+
+	case "SUBSCRIBE":
+		return handleSubscribe(cmd)
+
+	case "PUBLISH":
+		return handlePublish(cmd)
 
 	case "QUIT":
 		cmd.Conn.Write([]byte("+OK\r\n"))
@@ -216,5 +223,31 @@ func handleDecr(cmd protocol.Command) bool {
 func handleFlushAll(cmd protocol.Command) bool {
 	cache.FlushAll()
 	cmd.Conn.Write([]byte("+OK\r\n"))
+	return true
+}
+
+func handleSubscribe(cmd protocol.Command) bool {
+	if len(cmd.Args) < 2 {
+		cmd.Conn.Write([]byte("-ERR wrong number of arguments for SUBSCRIBE\r\n"))
+		return true
+	}
+	for _, channel := range cmd.Args[1:] {
+		pubsub.Subscribe(channel, cmd.Conn)
+		cmd.Conn.Write([]byte("*3\r\n"))
+		cmd.Conn.Write([]byte("$9\r\nsubscribe\r\n"))
+		cmd.Conn.Write([]byte("$" + strconv.Itoa(len(channel)) + "\r\n" + channel + "\r\n"))
+		cmd.Conn.Write([]byte(":1\r\n"))
+	}
+	return true
+}
+
+func handlePublish(cmd protocol.Command) bool {
+	if len(cmd.Args) != 3 {
+		cmd.Conn.Write([]byte("-ERR wrong number of arguments for PUBLISH\r\n"))
+		return true
+	}
+	channel, message := cmd.Args[1], cmd.Args[2]
+	count := pubsub.Publish(channel, message)
+	cmd.Conn.Write([]byte(fmt.Sprintf(":%d\r\n", count)))
 	return true
 }

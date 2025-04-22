@@ -22,6 +22,7 @@ go run cmd/server/main.go
 - internal/protocol: RESP/inline parser
 - internal/command: command dispatching logic
 - internal/persistence: (RDB style)	Save/load to disk
+- internal/pubsub: Implement publish/subscribe model
 
 ## Unit Test
 
@@ -47,10 +48,14 @@ go test ./internal/session -v
 ```bash
 go test ./internal/persistence -v
 ```
+- Running test for pubsub package
+```bash
+go test ./internal/pubsub -v
+```
+
 
 ## more features we will added in future
 
-- Pub/Sub	Implement publish/subscribe model
 - MULTI / EXEC	Transactions
 - LRU Eviction	Memory management strategy
 - Benchmark Tool	Load testing like redis-benchmark
