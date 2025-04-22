@@ -3,11 +3,20 @@ package main
 import (
 	"log"
 	"net"
+	"time"
 
 	"github.com/Sagor0078/redis-clone/internal/session"
+	"github.com/Sagor0078/redis-clone/internal/persistence"
 )
 
 func main() {
+
+	persistence.Load()
+
+	// Start periodic RDB saving (e.g., every 10 seconds)
+	persistence.SavePeriodically(10 * time.Second)
+
+
 	listener, err := net.Listen("tcp", ":6380")
 	if err != nil {
 		log.Fatal(err)

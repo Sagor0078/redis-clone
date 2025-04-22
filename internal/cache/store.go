@@ -73,3 +73,11 @@ func TTL(key string) time.Duration {
 func FlushAll() {
 	store = sync.Map{}
 }
+
+func Range(fn func(key, value string)) {
+	store.Range(func(k, v any) bool {
+		fn(k.(string), v.(string))
+		return true
+	})
+}
+
