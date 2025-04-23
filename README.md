@@ -58,6 +58,5 @@ go test ./internal/pubsub -v
 
 ## more features we will added in future
 
-- LRU Eviction	Memory management strategy
 - Benchmark Tool	Load testing like redis-benchmark
 - CLI Client	own mini redis-cli
