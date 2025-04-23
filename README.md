@@ -1,30 +1,77 @@
-# Redis Clone
+# Redis Clone in Go
 
-A lightweight Redis clone written in Go with basic in-memory key-value support.
+A lightweight, in-memory Redis clone built in **Go** over raw **TCP**, implementing core Redis functionality including transactions, pub/sub, expiration, and LRU eviction.
+
+---
 
 ## Features
 
-- GET, SET with EX/PX, DEL, QUIT, EXPIRE, TTL, PING, INCR, DECR, FLUSHALL,  (RDB style)Save/load to disk support
-- RESP and inline command parsing
-- Expiration support using goroutines
+### Core Redis Commands
+- `GET key`
+- `SET key value`
+- `DEL key`
+- `INCR key` / `DECR key`
+- `FLUSHALL`
+- `PING`
+- `QUIT`
 
-## Usage
+### ⏳ Expiration Support
+- `EXPIRE key seconds` — Set a timeout on a key
+- `TTL key` — Get remaining time to live
+- Automatic expiry with background eviction.
+
+### 🔄 Transactions
+- `MULTI` — Start transaction
+- `EXEC` — Execute queued commands
+- `DISCARD` — Cancel transaction
+- Queues and executes atomic command blocks per connection
+
+### 📢 Publish/Subscribe
+- `SUBSCRIBE channel`
+- `PUBLISH channel message`
+- Real-time pub/sub system with multiple channels
+
+### 🧠 LRU Cache Eviction
+- Auto-evicts **least recently used keys** when size threshold is exceeded
+- Built with `container/list` for efficient O(1) updates
+- Integrated into `GET`, `SET`, and `DEL` operations
+
+### 💬 RESP Protocol Support
+- Fully RESP-compliant parser (supports `*`, `$`, `+`, `-`, `:`)
+- Allows communication with Redis CLI or custom tools
+
+### 🌐 Server
+- Listens on `tcp://0.0.0.0:6380`
+- Handles concurrent clients
+- Graceful error handling for malformed inputs
+
+---
+
+## 📁 Project Structure
+
+```bash
+redis-clone/
+├── cmd/
+│   └── server/
+│       └── main.go          # TCP server entry point
+├── internal/
+│   ├── cache/               # Core key-value logic, LRU cache
+│   ├── command/             # Command router and handlers
+│   ├── protocol/            # RESP parser
+│   ├── pubsub/              # Pub/Sub manager
+│   └── transaction/         # MULTI/EXEC/DISCARD logic
+└── go.mod
+```
+
+### 🛠️ How to Run
 
 ```bash
 go run cmd/server/main.go
 ```
-
-## Structure
-
-- cmd/server: entry point
-- internal/session: TCP session handler
-- internal/cache: key-value store with TTL
-- internal/protocol: RESP/inline parser
-- internal/command: command dispatching logic
-- internal/persistence: (RDB style)	Save/load to disk
-- internal/pubsub: Implement publish/subscribe model
-- internal/transaction: Maintain Transaction State Per Connection
-
+Connect using Redis CLI:
+```bash
+redis-cli -p 6380
+```
 
 ## Unit Test
 
