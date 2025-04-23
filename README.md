@@ -23,6 +23,8 @@ go run cmd/server/main.go
 - internal/command: command dispatching logic
 - internal/persistence: (RDB style)	Save/load to disk
 - internal/pubsub: Implement publish/subscribe model
+- internal/transaction: Maintain Transaction State Per Connection
+
 
 ## Unit Test
 
@@ -56,7 +58,6 @@ go test ./internal/pubsub -v
 
 ## more features we will added in future
 
-- MULTI / EXEC	Transactions
 - LRU Eviction	Memory management strategy
 - Benchmark Tool	Load testing like redis-benchmark
 - CLI Client	own mini redis-cli

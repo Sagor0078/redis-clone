@@ -7,9 +7,13 @@ import (
 
 	"github.com/Sagor0078/redis-clone/internal/session"
 	"github.com/Sagor0078/redis-clone/internal/persistence"
+	"github.com/Sagor0078/redis-clone/internal/cache"
+
 )
 
 func main() {
+
+	cache.InitLRU(3)
 
 	persistence.Load()
 

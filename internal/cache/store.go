@@ -10,31 +10,31 @@ var (
 	expirations sync.Map 
 )
 
-func Set(key, value string) {
-	store.Store(key, value)
-	expirations.Delete(key) 
-}
+// func Set(key, value string) {
+// 	store.Store(key, value)
+// 	expirations.Delete(key) 
+// }
 
-func Get(key string) (string, bool) {
-	if exp, ok := expirations.Load(key); ok {
-		expTime := exp.(time.Time)
-		if time.Now().After(expTime) {
-			store.Delete(key)
-			expirations.Delete(key)
-			return "", false
-		}
-	}
-	val, ok := store.Load(key)
-	if !ok {
-		return "", false
-	}
-	return val.(string), true
-}
+// func Get(key string) (string, bool) {
+// 	if exp, ok := expirations.Load(key); ok {
+// 		expTime := exp.(time.Time)
+// 		if time.Now().After(expTime) {
+// 			store.Delete(key)
+// 			expirations.Delete(key)
+// 			return "", false
+// 		}
+// 	}
+// 	val, ok := store.Load(key)
+// 	if !ok {
+// 		return "", false
+// 	}
+// 	return val.(string), true
+// }
 
-func Delete(key string) {
-	store.Delete(key)
-	expirations.Delete(key)
-}
+// func Delete(key string) {
+// 	store.Delete(key)
+// 	expirations.Delete(key)
+// }
 
 func SetWithExpiration(key, value string, d time.Duration) {
 	Set(key, value)
@@ -70,9 +70,9 @@ func TTL(key string) time.Duration {
 	return ttl
 }
 
-func FlushAll() {
-	store = sync.Map{}
-}
+// func FlushAll() {
+// 	store = sync.Map{}
+// }
 
 func Range(fn func(key, value string)) {
 	store.Range(func(k, v any) bool {

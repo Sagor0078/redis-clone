@@ -21,12 +21,6 @@ func Handle(cmd protocol.Command) bool {
 	}
 
 	name := strings.ToUpper(cmd.Args[0])
-	
-	// if transaction.IsInTransaction(cmd.Conn) && name != "EXEC" && name != "DISCARD" {
-	// 	transaction.EnqueueCommand(cmd)
-	// 	cmd.Conn.Write([]byte("+QUEUED\r\n"))
-	// 	return true
-	// }
 
 	switch name {
 
@@ -83,19 +77,6 @@ func Handle(cmd protocol.Command) bool {
 
 	case "PUBLISH":
 		return handlePublish(cmd)
-
-	// case "MULTI":
-	// 	transaction.BeginTransaction(cmd.Conn)
-	// 	cmd.Conn.Write([]byte("+OK\r\n"))
-	// 	return true
-
-	// case "EXEC":
-	// 	transaction.ExecuteTransaction(cmd.Conn, Handle)
-	// 	return true
-
-	// case "DISCARD":
-	// 	transaction.DiscardTransaction(cmd.Conn)
-	// 	return true
 
 	case "QUIT":
 		cmd.Conn.Write([]byte("+OK\r\n"))
