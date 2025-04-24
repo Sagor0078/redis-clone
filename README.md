@@ -1,7 +1,7 @@
 # Redis Clone in Go
 
 A lightweight, in-memory Redis clone built in **Go**🐹 over raw **TCP**, implementing core Redis functionality including transactions, pub/sub, expiration, and LRU eviction.
-[![System Architecture](img/sys2.png)](https://github.com/Sagor0078/redis-clone)
+[![System Architecture(Created by GPT-4o)](img/sys2.png)](https://github.com/Sagor0078/redis-clone)
 
 ---
 
@@ -52,16 +52,54 @@ A lightweight, in-memory Redis clone built in **Go**🐹 over raw **TCP**, imple
 
 ```bash
 redis-clone/
-├── cmd/
-│   └── server/
-│       └── main.go          # TCP server entry point
-├── internal/
-│   ├── cache/               # Core key-value logic, LRU cache
-│   ├── command/             # Command router and handlers
-│   ├── protocol/            # RESP parser
-│   ├── pubsub/              # Pub/Sub manager
-│   └── transaction/         # MULTI/EXEC/DISCARD logic
-└── go.mod
+├── cmd/                         # Entrypoints for different binaries
+│   ├── bench/                   # Benchmark client
+│   │   └── bench.go             # Runs benchmark tests on Redis clone
+│   └── server/                  # Main server entrypoint
+│       └── main.go              # Starts the Redis server
+│
+├── internal/                   # Core application logic, organized by domain
+│   ├── cache/                  # In-memory storage layer
+│   │   ├── lru.go              # LRU eviction policy implementation
+│   │   ├── lru_test.go
+│   │   ├── store.go            # Key-value store with expiration
+│   │   └── store_test.go
+│
+│   ├── command/                # RESP command parsing and execution
+│   │   ├── handler.go          # Handles Redis commands: GET, SET, DEL, etc.
+│   │   └── handler_test.go
+│
+│   ├── persistence/           # RDB/AOF Persistence mechanism
+│   │   ├── rdb.go              # Dump/load logic for persistence
+│   │   └── rdb_test.go
+│
+│   ├── protocol/              # RESP protocol handling
+│   │   ├── buffer_writer.go    # Efficient buffered output
+│   │   ├── parser.go           # RESP3-compatible parser
+│   │   └── parser_test.go
+│
+│   ├── pubsub/                # Publish/Subscribe message broker
+│   │   ├── pubsub.go
+│   │   └── pubsub_test.go
+│
+│   ├── session/               # Connection/session management
+│   │   ├── session.go
+│   │   └── session_test.go
+│
+│   └── transaction/           # MULTI/EXEC transactions
+│       └── transaction.go
+│
+├── img/                        # Architecture or design diagrams
+│   ├── sys.png
+│   └── sys2.png
+│
+├── dump.rdb                    # Sample RDB file for persistence testing
+├── redis-clone                 # Built binary (created by Makefile)
+├── go.mod                      # Go module definition
+├── LICENSE
+├── Makefile                    # Automates build, test, benchmark, etc.
+└── README.md                   # Project documentation
+
 ```
 
 ### 🛠️ How to Run

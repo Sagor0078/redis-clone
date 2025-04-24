@@ -2,8 +2,8 @@ package pubsub
 
 import (
 	"net"
-	"sync"
 	"strconv"
+	"sync"
 )
 
 var mu sync.RWMutex

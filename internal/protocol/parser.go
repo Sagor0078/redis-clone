@@ -1,4 +1,3 @@
-
 package protocol
 
 import (
@@ -83,7 +82,6 @@ func (p *Parser) consumeArg() (string, error) {
 	}
 	return string(p.line[start:p.pos]), nil
 }
-
 
 func (p *Parser) respArray() (Command, error) {
 	cmd := Command{Conn: p.conn}

@@ -21,7 +21,7 @@ func TestSubscribeAndPublish(t *testing.T) {
 	// Start server goroutine to accept connection
 	go func() {
 		conn, _ := listener.Accept()
-		ready <- conn 
+		ready <- conn
 		reader := bufio.NewReader(conn)
 		for {
 			_, err := reader.ReadString('\n')

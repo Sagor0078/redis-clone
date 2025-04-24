@@ -2,10 +2,10 @@ package command
 
 import (
 	"bytes"
+	"net"
 	"strings"
 	"testing"
 	"time"
-	"net"
 
 	"github.com/Sagor0078/redis-clone/internal/cache"
 	"github.com/Sagor0078/redis-clone/internal/protocol"
@@ -20,12 +20,12 @@ func (m *mockConn) Write(b []byte) (int, error) {
 	return m.buf.Write(b)
 }
 
-func (m *mockConn) Read([]byte) (int, error)         { return 0, nil }
-func (m *mockConn) Close() error                     { return nil }
-func (m *mockConn) LocalAddr() net.Addr              { return nil }
-func (m *mockConn) RemoteAddr() net.Addr             { return nil }
-func (m *mockConn) SetDeadline(t time.Time) error    { return nil }
-func (m *mockConn) SetReadDeadline(t time.Time) error { return nil }
+func (m *mockConn) Read([]byte) (int, error)           { return 0, nil }
+func (m *mockConn) Close() error                       { return nil }
+func (m *mockConn) LocalAddr() net.Addr                { return nil }
+func (m *mockConn) RemoteAddr() net.Addr               { return nil }
+func (m *mockConn) SetDeadline(t time.Time) error      { return nil }
+func (m *mockConn) SetReadDeadline(t time.Time) error  { return nil }
 func (m *mockConn) SetWriteDeadline(t time.Time) error { return nil }
 
 func TestHandleSetAndGet(t *testing.T) {

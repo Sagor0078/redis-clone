@@ -42,8 +42,6 @@ func TestParser_RESPCommand(t *testing.T) {
 	}
 }
 
-
-
 func TestParser_InlineCommand(t *testing.T) {
 	conn := &mockConn{Reader: bytes.NewBufferString("SET key value\r\n")}
 	parser := NewParser(conn)

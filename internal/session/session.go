@@ -4,8 +4,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/Sagor0078/redis-clone/internal/protocol"
 	"github.com/Sagor0078/redis-clone/internal/command"
+	"github.com/Sagor0078/redis-clone/internal/protocol"
 )
 
 func Start(conn net.Conn) {

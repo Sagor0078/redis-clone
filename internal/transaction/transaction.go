@@ -1,15 +1,15 @@
 package transaction
 
 import (
-	"net"
 	"fmt"
+	"net"
 
 	"github.com/Sagor0078/redis-clone/internal/protocol"
 )
 
 type TransactionState struct {
-	Queue   []protocol.Command
-	Active  bool
+	Queue  []protocol.Command
+	Active bool
 }
 
 var transactions = make(map[net.Conn]*TransactionState)
@@ -53,7 +53,6 @@ func ExecuteTransaction(conn net.Conn, handler func(protocol.Command) bool) {
 
 	delete(transactions, conn)
 }
-
 
 func DiscardTransaction(conn net.Conn) {
 	delete(transactions, conn)

@@ -1,4 +1,3 @@
-
 package command
 
 import (
@@ -60,8 +59,8 @@ func Handle(cmd protocol.Command) bool {
 		return handleTTL(cmd)
 
 	case "PING":
-	    cmd.Conn.Write([]byte("+PONG\r\n"))
-	    return true
+		cmd.Conn.Write([]byte("+PONG\r\n"))
+		return true
 
 	case "INCR":
 		return handleIncr(cmd)
@@ -87,7 +86,6 @@ func Handle(cmd protocol.Command) bool {
 		return true
 	}
 
-
 }
 
 func handleGet(cmd protocol.Command) bool {
@@ -103,7 +101,6 @@ func handleGet(cmd protocol.Command) bool {
 	}
 	return true
 }
-
 
 func handleSet(cmd protocol.Command) bool {
 	if len(cmd.Args) < 3 {
@@ -174,11 +171,11 @@ func handleExpire(cmd protocol.Command) bool {
 	}
 	val, ok := cache.Get(key)
 	if !ok {
-		cmd.Conn.Write([]byte(":0\r\n")) 
+		cmd.Conn.Write([]byte(":0\r\n"))
 		return true
 	}
 	cache.SetWithExpiration(key, val, time.Duration(seconds)*time.Second)
-	cmd.Conn.Write([]byte(":1\r\n")) 
+	cmd.Conn.Write([]byte(":1\r\n"))
 	return true
 }
 
@@ -190,18 +187,17 @@ func handleTTL(cmd protocol.Command) bool {
 	key := cmd.Args[1]
 	_, ok := cache.Get(key)
 	if !ok {
-		cmd.Conn.Write([]byte(":-2\r\n")) 
+		cmd.Conn.Write([]byte(":-2\r\n"))
 		return true
 	}
 	ttl := cache.TTL(key)
 	if ttl < 0 {
-		cmd.Conn.Write([]byte(":-1\r\n")) 
+		cmd.Conn.Write([]byte(":-1\r\n"))
 	} else {
 		cmd.Conn.Write([]byte(fmt.Sprintf(":%d\r\n", int(ttl.Seconds()))))
 	}
 	return true
 }
-
 
 func handleIncr(cmd protocol.Command) bool {
 	if len(cmd.Args) != 2 {

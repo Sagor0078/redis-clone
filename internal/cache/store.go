@@ -7,12 +7,12 @@ import (
 
 var (
 	store       sync.Map
-	expirations sync.Map 
+	expirations sync.Map
 )
 
 // func Set(key, value string) {
 // 	store.Store(key, value)
-// 	expirations.Delete(key) 
+// 	expirations.Delete(key)
 // }
 
 // func Get(key string) (string, bool) {
@@ -59,7 +59,7 @@ func TTL(key string) time.Duration {
 
 	exp, ok := expirations.Load(key)
 	if !ok {
-		return -1 
+		return -1
 	}
 
 	ttl := time.Until(exp.(time.Time))
@@ -80,4 +80,3 @@ func Range(fn func(key, value string)) {
 		return true
 	})
 }
-
