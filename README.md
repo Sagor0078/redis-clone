@@ -1,4 +1,4 @@
-# Redis Clone in Go🐹
+# Redis Clone in Go
 
 A lightweight, in-memory Redis clone built in **Go**🐹 over raw **TCP**, implementing core Redis functionality including transactions, pub/sub, expiration, and LRU eviction.
 
@@ -72,6 +72,10 @@ Connect using Redis CLI:
 ```bash
 redis-cli -p 6380
 ```
+ Go CLI layout for benchnark:
+ ```bash
+go run cmd/benchmark/main.go -clients=50 -requests=100
+ ```
 
 ## Unit Test
 
@@ -102,8 +106,16 @@ go test ./internal/persistence -v
 go test ./internal/pubsub -v
 ```
 
+## References
+This project was inspired by a few projects, books and blog posts, it's based on them with things changed to the way I like
+- [redis-internals](https://github.com/zpoint/Redis-Internals/tree/5.0?tab=readme-ov-file)
+- [Writing a Redis clone in Go from scratch](https://mliezun.github.io/2023/04/08/redis-clone.html)
+- [Go, for Distributed Systems by Russ Cox](https://go.dev/talks/2013/distsys.slide#1)
+- [Designing Data-Intensive Applications by Martin Kleppmann](https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321)
+- and Obviously LLM like (GPT-4o, Claude, Gemini, etc)
+
+
 
 ## more features we will added in future
 
-- Benchmark Tool	Load testing like redis-benchmark
 - CLI Client	own mini redis-cli

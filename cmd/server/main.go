@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	cache.InitLRU(3)
+	cache.InitLRU(1000)
 
 	persistence.Load()
 

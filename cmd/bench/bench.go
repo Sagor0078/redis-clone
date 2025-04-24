@@ -17,7 +17,7 @@ var (
 
 func main() {
 	flag.IntVar(&numClients, "clients", 50, "Number of concurrent clients")
-	flag.IntVar(&numRequests, "requests", 100, "Total number of requests per client (SET+GET)")
+	flag.IntVar(&numRequests, "requests", 1000, "Total number of requests per client (SET+GET)")
 	flag.Parse()
 
 	var wg sync.WaitGroup
@@ -66,23 +66,23 @@ func main() {
 					return
 				}
 
-				// Read bulk string header
-				line, err := reader.ReadString('\n')
+				// Read bulk length or nil
+				header, err := reader.ReadString('\n')
 				if err != nil {
-					fmt.Println("Read error after GET:", err)
+					fmt.Println("Read error:", err)
 					return
 				}
-
-				if strings.HasPrefix(line, "$-1") {
+				if strings.HasPrefix(header, "$-1") {
 					fmt.Printf("Mismatch: got nil, expected %s\n", value)
 					continue
 				}
 
-				if !strings.HasPrefix(line, "$") {
-					fmt.Printf("Invalid GET response: %s\n", line)
+				if !strings.HasPrefix(header, "$") {
+					fmt.Printf("Invalid GET response: %s\n", header)
 					continue
 				}
 
+				// Read actual value
 				val, err := reader.ReadString('\n')
 				if err != nil {
 					fmt.Println("Read error reading value:", err)
