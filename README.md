@@ -1,6 +1,7 @@
 # Redis Clone in Go
 
 A lightweight, in-memory Redis clone built in **Go**🐹 over raw **TCP**, implementing core Redis functionality including transactions, pub/sub, expiration, and LRU eviction.
+[![System Architecture](img/sys2.png)](https://github.com/Sagor0078/redis-clone)
 
 ---
 
