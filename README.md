@@ -163,21 +163,21 @@ This project was inspired by a few projects, books and blog posts, it's based on
 ## Contributing
 Contribution Guidelines
 
-1.Fork the repository
-2.Create a new branch
+- Fork the repository
+- Create a new branch
 ```bash
 git checkout -b feature/your-feature-name
 ```
-3.Write tests for new functionality (if possible)
-4.Run tests locally
-5.Submit a pull request with a clear description
+- Write tests for new functionality (if possible)
+- Run tests locally
+- Submit a pull request with a clear description
 
 
 📌 Todo
 
-> Fix unit tests 
-> Add proper LRU caching support 
-> Add persistence (RDB/AOF) 
-> Build a simple CLI client 
-> Benchmarking tool 
+- Fix unit tests 
+- Add proper LRU caching support 
+- Add persistence (RDB/AOF) 
+- Build a simple CLI client 
+- Benchmarking tool 
 
