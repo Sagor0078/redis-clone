@@ -160,7 +160,24 @@ This project was inspired by a few projects, books and blog posts, it's based on
 - and Obviously LLM like (GPT-4o, Claude, Gemini, etc)
 
 
+## Contributing
+Contribution Guidelines
 
-## more features we will added in future
+1.Fork the repository
+2.Create a new branch
+```bash
+git checkout -b feature/your-feature-name
+```
+3.Write tests for new functionality (if possible)
+4.Run tests locally
+5.Submit a pull request with a clear description
 
-- CLI Client	own mini redis-cli
+
+📌 Todo
+
+> Fix unit tests 
+> Add proper LRU caching support 
+> Add persistence (RDB/AOF) 
+> Build a simple CLI client 
+> Benchmarking tool 
+
