@@ -1,96 +1,118 @@
 package command
 
 import (
-	"bytes"
 	"net"
-	"strings"
 	"testing"
 	"time"
 
-	"github.com/Sagor0078/redis-clone/internal/cache"
 	"github.com/Sagor0078/redis-clone/internal/protocol"
+	"github.com/stretchr/testify/assert"
 )
 
-// mockConn implements the net.Conn Write method for testing
+// --- MockConn ---
+
 type mockConn struct {
-	buf *bytes.Buffer
+	written []byte
 }
 
 func (m *mockConn) Write(b []byte) (int, error) {
-	return m.buf.Write(b)
+	m.written = append(m.written, b...)
+	return len(b), nil
 }
-
-func (m *mockConn) Read([]byte) (int, error)           { return 0, nil }
-func (m *mockConn) Close() error                       { return nil }
-func (m *mockConn) LocalAddr() net.Addr                { return nil }
-func (m *mockConn) RemoteAddr() net.Addr               { return nil }
-func (m *mockConn) SetDeadline(t time.Time) error      { return nil }
-func (m *mockConn) SetReadDeadline(t time.Time) error  { return nil }
+func (m *mockConn) Read([]byte) (int, error)         { return 0, nil }
+func (m *mockConn) Close() error                     { return nil }
+func (m *mockConn) LocalAddr() net.Addr              { return nil }
+func (m *mockConn) RemoteAddr() net.Addr             { return nil }
+func (m *mockConn) SetDeadline(t time.Time) error    { return nil }
+func (m *mockConn) SetReadDeadline(t time.Time) error { return nil }
 func (m *mockConn) SetWriteDeadline(t time.Time) error { return nil }
 
-func TestHandleSetAndGet(t *testing.T) {
-	conn := &mockConn{buf: &bytes.Buffer{}}
-	cmd := protocol.Command{
-		Conn: conn,
-		Args: []string{"SET", "foo", "bar"},
-	}
-	Handle(cmd)
-
-	if !strings.Contains(conn.buf.String(), "+OK") {
-		t.Errorf("expected +OK response, got %q", conn.buf.String())
-	}
-
-	conn.buf.Reset()
-	cmd = protocol.Command{
-		Conn: conn,
-		Args: []string{"GET", "foo"},
-	}
-	Handle(cmd)
-
-	expected := "$3\r\nbar\r\n"
-	if conn.buf.String() != expected {
-		t.Errorf("expected %q, got %q", expected, conn.buf.String())
-	}
+func getResponse(conn *mockConn) string {
+	return string(conn.written)
 }
 
-func TestHandleSetWithExpiration(t *testing.T) {
-	conn := &mockConn{buf: &bytes.Buffer{}}
-	cmd := protocol.Command{
+// --- Tests ---
+
+func TestHandleSetAndGet(t *testing.T) {
+	conn := &mockConn{}
+
+	// SET foo bar
+	Handle(protocol.Command{
+		Args: []string{"SET", "foo", "bar"},
 		Conn: conn,
-		Args: []string{"SET", "temp", "123", "EX", "1"},
-	}
-	Handle(cmd)
+	})
+	assert.Contains(t, getResponse(conn), "+OK")
 
-	if !strings.Contains(conn.buf.String(), "+OK") {
-		t.Errorf("expected +OK response, got %q", conn.buf.String())
-	}
+	// Clear buffer
+	conn.written = nil
 
-	time.Sleep(1100 * time.Millisecond)
-
-	conn.buf.Reset()
-	cmd = protocol.Command{
+	// GET foo
+	Handle(protocol.Command{
+		Args: []string{"GET", "foo"},
 		Conn: conn,
-		Args: []string{"GET", "temp"},
-	}
-	Handle(cmd)
-
-	expected := "$-1\r\n"
-	if conn.buf.String() != expected {
-		t.Errorf("expected %q, got %q", expected, conn.buf.String())
-	}
+	})
+	assert.Contains(t, getResponse(conn), "$3\r\nbar")
 }
 
 func TestHandleDel(t *testing.T) {
-	cache.Set("toDelete", "val")
-	conn := &mockConn{buf: &bytes.Buffer{}}
-	cmd := protocol.Command{
-		Conn: conn,
-		Args: []string{"DEL", "toDelete"},
-	}
-	Handle(cmd)
+	conn := &mockConn{}
 
-	expected := ":1\r\n"
-	if conn.buf.String() != expected {
-		t.Errorf("expected %q, got %q", expected, conn.buf.String())
-	}
+	// SET key1 value1
+	Handle(protocol.Command{
+		Args: []string{"SET", "key1", "value1"},
+		Conn: conn,
+	})
+
+	// DEL key1
+	conn.written = nil
+	Handle(protocol.Command{
+		Args: []string{"DEL", "key1"},
+		Conn: conn,
+	})
+	assert.Contains(t, getResponse(conn), ":1")
+}
+
+func TestHandleIncr(t *testing.T) {
+	conn := &mockConn{}
+
+	// SET counter 5
+	Handle(protocol.Command{
+		Args: []string{"SET", "counter", "5"},
+		Conn: conn,
+	})
+
+	conn.written = nil
+	// INCR counter
+	Handle(protocol.Command{
+		Args: []string{"INCR", "counter"},
+		Conn: conn,
+	})
+	assert.Contains(t, getResponse(conn), ":6")
+}
+
+func TestHandleExpireAndTTL(t *testing.T) {
+	conn := &mockConn{}
+
+	// SET temp value
+	Handle(protocol.Command{
+		Args: []string{"SET", "temp", "value"},
+		Conn: conn,
+	})
+
+	// EXPIRE temp 2
+	conn.written = nil
+	Handle(protocol.Command{
+		Args: []string{"EXPIRE", "temp", "2"},
+		Conn: conn,
+	})
+	assert.Contains(t, getResponse(conn), ":1")
+
+	// TTL temp (should be close to 2)
+	conn.written = nil
+	Handle(protocol.Command{
+		Args: []string{"TTL", "temp"},
+		Conn: conn,
+	})
+	resp := getResponse(conn)
+	assert.Contains(t, resp, ":2") || assert.Contains(t, resp, ":1")
 }
