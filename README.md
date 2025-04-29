@@ -16,39 +16,39 @@ A lightweight, in-memory Redis clone built in **Go**🐹 over raw **TCP**, imple
 - `PING`
 - `QUIT`
 
-### ⏳ Expiration Support
+### Expiration Support
 - `EXPIRE key seconds` — Set a timeout on a key
 - `TTL key` — Get remaining time to live
 - Automatic expiry with background eviction.
 
-### 🔄 Transactions
+### Transactions
 - `MULTI` — Start transaction
 - `EXEC` — Execute queued commands
 - `DISCARD` — Cancel transaction
 - Queues and executes atomic command blocks per connection
 
-### 📢 Publish/Subscribe
+### Publish/Subscribe
 - `SUBSCRIBE channel`
 - `PUBLISH channel message`
 - Real-time pub/sub system with multiple channels
 
-### 🧠 LRU Cache Eviction
+### LRU Cache Eviction
 - Auto-evicts **least recently used keys** when size threshold is exceeded
 - Built with `container/list` for efficient O(1) updates
 - Integrated into `GET`, `SET`, and `DEL` operations
 
-### 💬 RESP Protocol Support
+### RESP Protocol Support
 - Fully RESP-compliant parser (supports `*`, `$`, `+`, `-`, `:`)
 - Allows communication with Redis CLI or custom tools
 
-### 🌐 Server
+### Server
 - Listens on `tcp://0.0.0.0:6380`
 - Handles concurrent clients
 - Graceful error handling for malformed inputs
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```bash
 redis-clone/
@@ -119,7 +119,7 @@ go run cmd/benchmark/main.go -clients=50 -requests=100
 ## Unit Test
 
 > \[!WARNING\]
-> ⚠️ **Tests are currently under construction** 🏗️  
+> ⚠**Tests are currently under construction**   
 
 
 Some parts of the system aren't fully covered yet, and there are a few known issues we're ironing out.
@@ -166,7 +166,7 @@ Contribution Guidelines
 - Fork the repository
 - Create a new branch
 ```bash
-git checkout -b feature/your-feature-name
+git checkout -b feature/
 ```
 - Write tests for new functionality (if possible)
 - Run tests locally
