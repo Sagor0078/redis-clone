@@ -119,7 +119,7 @@ go run cmd/benchmark/main.go -clients=50 -requests=100
 ## Unit Test
 
 > \[!WARNING\]
-> ⚠**Tests are currently under construction**   
+> **Tests are currently under construction**   
 
 
 Some parts of the system aren't fully covered yet, and there are a few known issues we're ironing out.
