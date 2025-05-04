@@ -165,8 +165,16 @@ Contribution Guidelines
 
 - Fork the repository
 - Create a new branch
+
 ```bash
-git checkout -b feature/
+# create a new branch
+git checkout -b feature/my-update
+
+# make your changes and push
+git add .
+git commit -m "Added my update"
+git push origin feature/my-update
+
 ```
 - Write tests for new functionality (if possible)
 - Run tests locally
